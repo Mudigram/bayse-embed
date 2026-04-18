@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bayse Embed — Smoke Test</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #f5f5f3;
+            padding: 40px 20px;
+        }
+
+        h2 {
+            font-size: 13px;
+            font-weight: 500;
+            color: #888780;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .debug {
+            margin-top: 40px;
+            padding: 16px;
+            background: #fff;
+            border: 0.5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #333;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .debug-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #888780;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="section">
+        <h2>Full variant</h2>
+        <bayse-market slug="will-arsenal-go-trophyless-this-season" variant="full" currency="NGN"></bayse-market>
+    </div>
+
+    <div class="section">
+        <h2>Compact variant</h2>
+        <bayse-market slug="elon-musk-tweets-april-16-april-18-2026" variant="compact" currency="USD"></bayse-market>
+    </div>
+
+    <div class="section">
+        <h2>Full variant</h2>
+        <bayse-market slug="how-many-first-day-streams-for-acl" variant="full" currency="NGN"></bayse-market>
+    </div>
+
+    <div class="section">
+        <h2>Error state — bad slug</h2>
+        <bayse-market slug="this-slug-does-not-exist" variant="full"></bayse-market>
+    </div>
+
+    <div class="section">
+        <h2>Missing slug — should show attribute error</h2>
+        <bayse-market variant="full"></bayse-market>
+    </div>
+
+    <div class="section">
+        <div class="debug-label">Console log</div>
+        <div class="debug" id="debug-output">Waiting for events...</div>
+    </div>
+
+    <script src="dist/cdn/embed.js"></script>
+
+    <script>
+        const output = document.getElementById('debug-output')
+        const lines = []
+
+        function log(msg) {
+            const time = new Date().toLocaleTimeString()
+            lines.unshift(`[${time}] ${msg}`)
+            output.textContent = lines.slice(0, 50).join('\n')
+        }
+
+        const original = {
+            log: console.log,
+            warn: console.warn,
+            error: console.error
+        }
+
+        console.log = (...args) => { original.log(...args); log('LOG: ' + args.join(' ')) }
+        console.warn = (...args) => { original.warn(...args); log('WARN: ' + args.join(' ')) }
+        console.error = (...args) => { original.error(...args); log('ERROR: ' + args.join(' ')) }
+
+        window.addEventListener('error', (e) => {
+            log('UNCAUGHT: ' + e.message)
+        })
+
+        log('embed.js loaded — watching for activity')
+    </script>
+
+</body>
+
+</html>
