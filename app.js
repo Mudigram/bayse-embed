@@ -199,7 +199,15 @@ function closePanel() {
     document.body.style.overflow = ''
 }
 
-function createPreviewIframe(slug, variant, currency) {
+function createPreviewIframe(slug, variant, currency, parent) {
+    if (parent) {
+        parent.innerHTML = `
+            <div class="loading-container">
+                <div class="rolling-loader"></div>
+                <span>Loading preview...</span>
+            </div>
+        `
+    }
     const iframe = document.createElement('iframe')
     iframe.src = '/preview.html'
     iframe.style.cssText = `
@@ -210,6 +218,10 @@ function createPreviewIframe(slug, variant, currency) {
         transition: height 0.2s ease;
     `
     iframe.onload = () => {
+        if (parent) {
+            const loader = parent.querySelector('.loading-container')
+            if (loader) loader.remove()
+        }
         iframe.contentWindow.postMessage({
             type: 'bayse-render',
             slug,
@@ -228,7 +240,7 @@ function renderPanel() {
     const preview = document.getElementById('panel-preview')
     let iframe = preview.querySelector('iframe')
     if (!iframe) {
-        iframe = createPreviewIframe(slug, variant, currency)
+        iframe = createPreviewIframe(slug, variant, currency, preview)
         preview.appendChild(iframe)
     } else {
         iframe.style.minHeight = variant === 'compact' ? '140px' : '320px'
@@ -269,14 +281,14 @@ function updateVariantPreview(slug) {
 
     let fullIframe = fullEl.querySelector('iframe')
     if (!fullIframe) {
-        fullEl.appendChild(createPreviewIframe(slug, 'full', state.currency))
+        fullEl.appendChild(createPreviewIframe(slug, 'full', state.currency, fullEl))
     } else {
         fullIframe.contentWindow.postMessage({ type: 'bayse-render', slug, variant: 'full', currency: state.currency }, '*')
     }
 
     let compactIframe = compactEl.querySelector('iframe')
     if (!compactIframe) {
-        compactEl.appendChild(createPreviewIframe(slug, 'compact', state.currency))
+        compactEl.appendChild(createPreviewIframe(slug, 'compact', state.currency, compactEl))
     } else {
         compactIframe.contentWindow.postMessage({ type: 'bayse-render', slug, variant: 'compact', currency: state.currency }, '*')
     }
