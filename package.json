@@ -1,5 +1,5 @@
 {
-  "name": "bayse-embed",
+  "name": "bayse-markets-embed",
   "version": "0.1.0",
   "description": "Embeddable market widgets for Bayse Markets",
   "main": "./dist/index.cjs",
