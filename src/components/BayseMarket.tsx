@@ -5,18 +5,24 @@ import { useBayseStream } from '../hooks/useBayseStream'
 
 const TRADE_BASE_URL = 'https://bayse.markets/events'
 
-function formatPrice(price: number): string {
-    return `${Math.round(price * 100)}¢`
+function getCurrencySymbol(currency: string): string {
+    return currency === 'NGN' ? '₦' : '$'
+}
+
+function formatPrice(price: number, currency: string): string {
+    const symbol = getCurrencySymbol(currency)
+    return `${symbol}${Math.round(price * 100)}`
 }
 
 function formatProbability(price: number): string {
     return `${Math.round(price * 100)}%`
 }
 
-function formatVolume(value: number): string {
-    if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
-    if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
-    return `$${value.toFixed(0)}`
+function formatVolume(value: number, currency: string): string {
+    const symbol = getCurrencySymbol(currency)
+    if (value >= 1_000_000) return `${symbol}${(value / 1_000_000).toFixed(1)}M`
+    if (value >= 1_000) return `${symbol}${(value / 1_000).toFixed(1)}K`
+    return `${symbol}${value.toFixed(0)}`
 }
 
 function formatDate(iso: string): string {
@@ -124,13 +130,15 @@ function FullCard({
     prices,
     streamStatus,
     onTrade,
-    slug
+    slug,
+    currency
 }: {
     state: MarketState
     prices: MarketPrice
     streamStatus: string
     onTrade: () => void
     slug: string
+    currency: string
 }) {
     const { event, market } = state
     if (!event || !market) return null
@@ -180,7 +188,7 @@ function FullCard({
                             {label}
                         </p>
                         <p style={{ margin: '0 0 3px', fontSize: '22px', fontWeight: 500, color, lineHeight: 1 }}>
-                            {formatPrice(price)}
+                            {formatPrice(price, currency)}
                         </p>
                         <p style={{ margin: 0, fontSize: '11px', color: 'var(--color-text-secondary, #5F5E5A)' }}>
                             per share
@@ -211,8 +219,8 @@ function FullCard({
                 borderBottom: '0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.15))'
             }}>
                 {[
-                    { label: '24h volume', value: formatVolume(event.totalVolume) },
-                    { label: 'Liquidity', value: formatVolume(event.liquidity) }
+                    { label: '24h volume', value: formatVolume(event.totalVolume, currency) },
+                    { label: 'Liquidity', value: formatVolume(event.liquidity, currency) }
                 ].map(({ label, value }, i) => (
                     <div key={label} style={{
                         paddingRight: i === 0 ? '16px' : 0,
@@ -262,11 +270,13 @@ function FullCard({
 function CompactCard({
     state,
     prices,
-    onTrade
+    onTrade,
+    currency
 }: {
     state: MarketState
     prices: MarketPrice
     onTrade: () => void
+    currency: string
 }) {
     const { event } = state
     if (!event) return null
@@ -278,11 +288,11 @@ function CompactCard({
             </p>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F6E56' }}>
-                    {prices.outcome1Label} {formatPrice(prices.outcome1Price)}
+                    {prices.outcome1Label} {formatPrice(prices.outcome1Price, currency)}
                 </span>
                 <span style={{ fontSize: '11px', color: 'var(--color-text-secondary, #5F5E5A)' }}>·</span>
                 <span style={{ fontSize: '13px', fontWeight: 500, color: '#A32D2D' }}>
-                    {prices.outcome2Label} {formatPrice(prices.outcome2Price)}
+                    {prices.outcome2Label} {formatPrice(prices.outcome2Price, currency)}
                 </span>
             </div>
             <ProbabilityBar outcome1Price={prices.outcome1Price} />
@@ -340,7 +350,7 @@ export function BayseMarket({ slug, variant = 'full', currency = 'USD', onTrade 
     if (!prices) return null
 
     if (variant === 'compact') {
-        return <CompactCard state={state} prices={prices} onTrade={handleTrade} />
+        return <CompactCard state={state} prices={prices} onTrade={handleTrade} currency={currency} />
     }
 
     return (
@@ -350,6 +360,7 @@ export function BayseMarket({ slug, variant = 'full', currency = 'USD', onTrade 
             streamStatus={status}
             onTrade={handleTrade}
             slug={slug}
+            currency={currency}
         />
     )
 }

@@ -1,128 +1,311 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bayse Embed — Smoke Test</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #f5f5f3;
-            padding: 40px 20px;
-        }
-
-        h2 {
-            font-size: 13px;
-            font-weight: 500;
-            color: #888780;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .section {
-            margin-bottom: 40px;
-        }
-
-        .row {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            align-items: flex-start;
-        }
-
-        .debug {
-            margin-top: 40px;
-            padding: 16px;
-            background: #fff;
-            border: 0.5px solid rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 12px;
-            color: #333;
-            white-space: pre-wrap;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .debug-label {
-            font-size: 13px;
-            font-weight: 500;
-            color: #888780;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-    </style>
+    <title>Bayse Embed — Publisher Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
 
-    <div class="section">
-        <h2>Full variant</h2>
-        <bayse-market slug="will-arsenal-go-trophyless-this-season" variant="full" currency="NGN"></bayse-market>
+    <nav class="nav">
+        <div class="nav-brand">
+            <img src="/src/bayse-logo.jpeg" alt="Bayse Logo" class="nav-logo">
+            <div>
+                <div class="nav-title">Bayse Embed</div>
+                <div class="nav-subtitle">Publisher Platform</div>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="nav-links">
+                <button class="nav-link active" data-page="browse" onclick="showPage('browse')">
+                    Browse Markets
+                </button>
+                <button class="nav-link" data-page="docs" onclick="showPage('docs')">
+                    Documentation
+                </button>
+            </div>
+            <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+                🌙
+            </button>
+        </div>
+    </nav>
+
+    <!-- ── Browse page ───────────────────────────────────────── -->
+    <div class="page active" data-page="browse">
+
+        <div class="hero">
+            <span class="hero-eyebrow">✦ Bayse Embed</span>
+            <h1>Embed live prediction markets on any website</h1>
+            <p>Drop a single script tag and your readers get live YES/NO prices, real-time updates, and a direct link to
+                trade on Bayse.</p>
+            <div class="hero-actions">
+                <button class="btn btn-primary" onclick="showPage('docs')">Read the docs</button>
+                <button class="btn btn-secondary"
+                    onclick="document.getElementById('browse-section').scrollIntoView({behavior:'smooth'})">
+                    Browse markets ↓
+                </button>
+            </div>
+        </div>
+
+        <div class="container" id="browse-section">
+
+            <div class="toolbar">
+                <!-- Row 1: search + currency -->
+                <div class="toolbar-row">
+                    <div class="search-wrap">
+                        <span class="search-icon">⌕</span>
+                        <input type="text" id="search-input" placeholder="Search markets…"
+                            oninput="setSearch(this.value)" />
+                    </div>
+                    <div class="currency-toggle">
+                        <button class="currency-btn active" data-currency="NGN"
+                            onclick="setCurrency('NGN')">NGN</button>
+                        <button class="currency-btn " data-currency="USD" onclick="setCurrency('USD')">USD</button>
+
+                    </div>
+                </div>
+                <!-- Row 2: category pills -->
+                <div class="category-pills" id="category-pills">
+                    <button class="cat-pill active" data-cat="all" onclick="setCategory('all')">All</button>
+                    <button class="cat-pill" data-cat="crypto" onclick="setCategory('crypto')">Crypto</button>
+                    <button class="cat-pill" data-cat="sports" onclick="setCategory('sports')">Sports</button>
+                    <button class="cat-pill" data-cat="politics" onclick="setCategory('politics')">Politics</button>
+                    <button class="cat-pill" data-cat="finance" onclick="setCategory('finance')">Finance</button>
+                    <button class="cat-pill" data-cat="culture" onclick="setCategory('culture')">Culture</button>
+                    <button class="cat-pill" data-cat="economy" onclick="setCategory('economy')">Economy</button>
+                    <button class="cat-pill" data-cat="technology"
+                        onclick="setCategory('technology')">Technology</button>
+                    <button class="cat-pill" data-cat="entertainment"
+                        onclick="setCategory('entertainment')">Entertainment</button>
+                </div>
+            </div>
+
+            <div class="events-grid" id="events-grid"></div>
+
+        </div>
     </div>
 
-    <div class="section">
-        <h2>Compact variant</h2>
-        <bayse-market slug="elon-musk-tweets-april-16-april-18-2026" variant="compact" currency="USD"></bayse-market>
+    <!-- ── Docs page ─────────────────────────────────────────── -->
+    <div class="page" data-page="docs">
+
+        <div class="docs-hero">
+            <h1>Documentation</h1>
+            <p>Everything you need to embed live Bayse prediction markets on your website or app.</p>
+        </div>
+
+        <div class="docs-grid">
+
+            <nav class="docs-nav">
+                <button class="docs-nav-item active" data-section="overview"
+                    onclick="showDocsSection('overview')">Overview</button>
+                <button class="docs-nav-item" data-section="install"
+                    onclick="showDocsSection('install')">Installation</button>
+                <button class="docs-nav-item" data-section="react" onclick="showDocsSection('react')">React</button>
+                <button class="docs-nav-item" data-section="props" onclick="showDocsSection('props')">Props</button>
+                <button class="docs-nav-item" data-section="variants"
+                    onclick="showDocsSection('variants')">Variants</button>
+            </nav>
+
+            <div class="docs-content">
+
+                <!-- Overview -->
+                <div class="docs-section" data-section="overview">
+                    <h2>Overview</h2>
+                    <p>Bayse Embed lets you add live prediction market widgets to any webpage. Markets update in real
+                        time via WebSocket — your readers always see the current YES/NO prices without refreshing.</p>
+                    <p>There are two ways to use the embed. The script tag version works on any website with no
+                        framework needed. The React component version is for developer sites and Next.js apps.</p>
+                    <p>Both versions are read-only — your readers see live prices and can click through to trade on
+                        Bayse. No API keys required to display markets.</p>
+                </div>
+
+                <!-- Installation -->
+                <div class="docs-section" data-section="install" style="display:none">
+                    <h2>Installation</h2>
+                    <p>Add the embed script to your page once, then place as many market tags as you need.</p>
+                    <div class="install-steps">
+                        <div class="install-step">
+                            <div class="step-num">1</div>
+                            <div class="step-content">
+                                <div class="step-label">Add the script tag to your page</div>
+                                <div class="code-block" style="margin-top:10px">
+                                    <pre>&lt;script src="https://cdn.bayse.markets/embed.js"&gt;&lt;/script&gt;</pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="install-step">
+                            <div class="step-num">2</div>
+                            <div class="step-content">
+                                <div class="step-label">Drop the market tag wherever you want the widget</div>
+                                <div class="code-block" style="margin-top:10px">
+                                    <pre>&lt;bayse-market slug="your-market-slug"&gt;&lt;/bayse-market&gt;</pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="install-step">
+                            <div class="step-num">3</div>
+                            <div class="step-content">
+                                <div class="step-label">Done — the widget renders and connects to live prices
+                                    automatically.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- React -->
+                <div class="docs-section" data-section="react" style="display:none">
+                    <h2>React</h2>
+                    <p>Install the package from npm:</p>
+                    <div class="code-block" style="margin-bottom:18px">
+                        <pre>npm install bayse-embed</pre>
+                    </div>
+                    <p>Then import and use the component:</p>
+                    <div class="code-block">
+                        <pre>import { BayseMarket } from 'bayse-embed'
+
+export default function MyPage() {
+  return (
+    &lt;BayseMarket
+      slug="your-market-slug"
+      variant="full"
+      currency="USD"
+    /&gt;
+  )
+}</pre>
+                    </div>
+                </div>
+
+                <!-- Props -->
+                <div class="docs-section" data-section="props" style="display:none">
+                    <h2>Props</h2>
+                    <p>All props apply to both the web component attributes and the React component props.</p>
+                    <table class="prop-table">
+                        <thead>
+                            <tr>
+                                <th>Prop</th>
+                                <th>Type</th>
+                                <th>Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>slug</td>
+                                <td><code>string</code></td>
+                                <td>—</td>
+                                <td>Required. The market slug from the Bayse URL.</td>
+                            </tr>
+                            <tr>
+                                <td>variant</td>
+                                <td><code>"full" | "compact"</code></td>
+                                <td><code>"full"</code></td>
+                                <td>Full card with all stats or compact inline version.</td>
+                            </tr>
+                            <tr>
+                                <td>currency</td>
+                                <td><code>"USD" | "NGN"</code></td>
+                                <td><code>"USD"</code></td>
+                                <td>Display prices in USD or Nigerian Naira.</td>
+                            </tr>
+                            <tr>
+                                <td>onTrade</td>
+                                <td><code>(slug: string) => void</code></td>
+                                <td>Opens Bayse</td>
+                                <td>React only. Override the trade button behaviour.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Variants — live preview -->
+                <div class="docs-section" data-section="variants" style="display:none">
+                    <h2>Variants</h2>
+                    <p>There are two widget variants. Enter any market slug below to see a live preview of both.</p>
+
+                    <div class="variant-demo">
+                        <div class="variant-demo-slug">
+                            <label for="preview-slug">Market slug</label>
+                            <input type="text" id="preview-slug" value="will-carter-efe-defeat-portable"
+                                placeholder="your-market-slug" oninput="updateVariantPreview(this.value)" />
+                        </div>
+                        <div class="variant-demo-columns">
+                            <div class="variant-demo-col">
+                                <h4>Full</h4>
+                                <div id="preview-full"></div>
+                            </div>
+                            <div class="variant-demo-col">
+                                <h4>Compact</h4>
+                                <div id="preview-compact"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Full</h3>
+                    <p>Shows the market question, YES/NO prices, probability bar, volume, liquidity, and a Trade on
+                        Bayse button. Best for dedicated embed placements, sidebars, and article footers.</p>
+
+                    <h3>Compact</h3>
+                    <p>A minimal inline card with just the prices and probability bar. Best for link previews, inline
+                        callouts, and tight layouts.</p>
+                </div>
+
+            </div>
+        </div>
     </div>
 
-    <div class="section">
-        <h2>Full variant</h2>
-        <bayse-market slug="how-many-first-day-streams-for-acl" variant="full" currency="NGN"></bayse-market>
-    </div>
+    <!-- ── Embed panel ────────────────────────────────────────── -->
+    <div class="panel-overlay" id="panel-overlay" onclick="if(event.target===this)closePanel()">
+        <div class="panel">
+            <div class="panel-header">
+                <p class="panel-title" id="panel-title"></p>
+                <button class="panel-close" onclick="closePanel()">✕</button>
+            </div>
+            <div class="panel-body">
 
-    <div class="section">
-        <h2>Error state — bad slug</h2>
-        <bayse-market slug="this-slug-does-not-exist" variant="full"></bayse-market>
-    </div>
+                <!-- Variant toggle first — user picks, then sees the result below -->
+                <div class="panel-section">
+                    <p class="panel-label">Variant</p>
+                    <div class="variant-toggle">
+                        <button class="variant-btn active" data-variant="full"
+                            onclick="setVariant('full')">Full</button>
+                        <button class="variant-btn" data-variant="compact"
+                            onclick="setVariant('compact')">Compact</button>
+                    </div>
+                </div>
 
-    <div class="section">
-        <h2>Missing slug — should show attribute error</h2>
-        <bayse-market variant="full"></bayse-market>
-    </div>
+                <!-- Live preview well -->
+                <div class="panel-section">
+                    <p class="panel-label">Live Preview</p>
+                    <div class="panel-preview-well">
+                        <div class="panel-preview" id="panel-preview"></div>
+                    </div>
+                </div>
 
-    <div class="section">
-        <div class="debug-label">Console log</div>
-        <div class="debug" id="debug-output">Waiting for events...</div>
+                <!-- Embed code -->
+                <div class="panel-section">
+                    <p class="panel-label">Embed Code</p>
+                    <div class="code-tabs">
+                        <button class="code-tab active" data-tab="html" onclick="setCodeTab('html')">HTML</button>
+                        <button class="code-tab" data-tab="react" onclick="setCodeTab('react')">React</button>
+                    </div>
+                    <div class="code-block">
+                        <pre id="code-content"></pre>
+                        <button class="copy-btn" id="copy-btn" onclick="copyCode()">Copy</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 
     <script src="dist/cdn/embed.js"></script>
-
-    <script>
-        const output = document.getElementById('debug-output')
-        const lines = []
-
-        function log(msg) {
-            const time = new Date().toLocaleTimeString()
-            lines.unshift(`[${time}] ${msg}`)
-            output.textContent = lines.slice(0, 50).join('\n')
-        }
-
-        const original = {
-            log: console.log,
-            warn: console.warn,
-            error: console.error
-        }
-
-        console.log = (...args) => { original.log(...args); log('LOG: ' + args.join(' ')) }
-        console.warn = (...args) => { original.warn(...args); log('WARN: ' + args.join(' ')) }
-        console.error = (...args) => { original.error(...args); log('ERROR: ' + args.join(' ')) }
-
-        window.addEventListener('error', (e) => {
-            log('UNCAUGHT: ' + e.message)
-        })
-
-        log('embed.js loaded — watching for activity')
-    </script>
+    <script src="app.js"></script>
 
 </body>
 

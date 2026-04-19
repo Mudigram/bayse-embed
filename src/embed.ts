@@ -1,1 +1,1 @@
-import './web-components/BayseMarketElement.ts'
+export { BayseMarketElement } from './web-components/BayseMarketElement'

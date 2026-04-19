@@ -12,12 +12,16 @@ export default defineConfig({
         })
     ],
     server: {
-        open: 'index.html',
+        open: '/index.html',
         proxy: {
             '/api': {
                 target: 'https://relay.bayse.markets',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, '')
+            },
+            '/embed.js': {
+                target: 'http://localhost:5173',
+                rewrite: () => '/dist/cdn/embed.js'
             }
         }
     },

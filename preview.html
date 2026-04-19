@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: transparent;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mount"></div>
+    <script src="/embed.js" onload="console.log('embed.js loaded')" onerror="console.error('embed.js failed to load')"></script>
+    <style>
+        @keyframes custom-shimmer {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .preview-skeleton {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #ffffff;
+            border: 0.5px solid rgba(0,0,0,0.15);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 420px;
+            width: 100%;
+            pointer-events: none;
+        }
+        .skel-line {
+            height: 14px;
+            background: #D3D1C7;
+            border-radius: 4px;
+            opacity: 0.6;
+            animation: custom-shimmer 1.6s infinite;
+        }
+    </style>
+    <script>
+        console.log('preview.html inline script executing, waiting for message...')
+        window.addEventListener('message', function (e) {
+            console.log('preview.html received message:', e.data)
+            if (e.data?.type !== 'bayse-render') return
+            const { slug, variant, currency } = e.data
+            const mount = document.getElementById('mount')
+            
+            let el = mount.querySelector('bayse-market')
+            if (!el) {
+                el = document.createElement('bayse-market')
+                // Inject a skeleton that matches the React component's initial loading state
+                // This gets cleanly overwritten by the shadow DOM when customElements.define fires!
+                el.innerHTML = `
+                    <div class="preview-skeleton">
+                        <div class="skel-line" style="width: 120px;"></div>
+                        <div class="skel-line" style="width: 80px;"></div>
+                        <div class="skel-line" style="width: 40px;"></div>
+                    </div>
+                `
+                mount.appendChild(el)
+                console.log('preview.html appended initial bayse-market:', el)
+            }
+            
+            // Update attributes - the custom element's attributeChangedCallback handles rapid React updates
+            if (slug) el.setAttribute('slug', slug)
+            if (variant) el.setAttribute('variant', variant)
+            if (currency) el.setAttribute('currency', currency)
+        })
+    </script>
+</body>
+
+</html>
