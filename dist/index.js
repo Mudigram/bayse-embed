@@ -1,7 +1,7 @@
 import { jsx as r, jsxs as i } from "react/jsx-runtime";
-import { useState as g, useEffect as k, useRef as x, useCallback as $ } from "react";
-const j = "https://relay.bayse.markets/v1";
-function _(e) {
+import { useState as g, useEffect as k, useRef as x, useCallback as z } from "react";
+const _ = typeof window < "u" && window.location.hostname === "localhost" ? "/api/v1" : "https://relay.bayse.markets/v1";
+function N(e) {
   return {
     outcome1Label: e.outcome1Label,
     outcome1Price: e.outcome1Price,
@@ -22,7 +22,7 @@ function I(e, t) {
   }
 }
 function O(e, t = "USD") {
-  const [u, c] = g({
+  const [o, s] = g({
     event: null,
     market: null,
     prices: null,
@@ -31,63 +31,63 @@ function O(e, t = "USD") {
   });
   return k(() => {
     if (!e) return;
-    let p = !1;
-    async function s() {
-      c((n) => ({ ...n, loading: !0, error: null }));
+    let a = !1;
+    async function f() {
+      s((n) => ({ ...n, loading: !0, error: null }));
       try {
         const n = await fetch(
-          `${j}/pm/events/slug/${e}?currency=${t}`
+          `${_}/pm/events/slug/${e}?currency=${t}`
         );
         if (!n.ok)
           throw new Error(I(n.status, e));
-        const o = await n.json(), a = o.markets[0];
-        if (!a)
+        const d = await n.json(), c = d.markets[0];
+        if (!c)
           throw new Error(`No markets found for "${e}"`);
-        p || c({
-          event: o,
-          market: a,
-          prices: _(a),
+        a || s({
+          event: d,
+          market: c,
+          prices: N(c),
           loading: !1,
           error: null
         });
       } catch (n) {
-        p || c((o) => ({
-          ...o,
+        a || s((d) => ({
+          ...d,
           loading: !1,
           error: n instanceof Error ? n.message : "Something went wrong"
         }));
       }
     }
-    return s(), () => {
-      p = !0;
+    return f(), () => {
+      a = !0;
     };
-  }, [e, t]), u;
+  }, [e, t]), o;
 }
 const q = "wss://socket.bayse.markets/ws/v1/markets", H = 3e4;
-function N({
+function J({
   eventId: e,
   marketId: t,
-  onPriceUpdate: u
+  onPriceUpdate: o
 }) {
-  const [c, p] = g("disconnected"), [s, n] = g(null), o = x(null), a = x(0), l = x(null), f = x(!0), m = x(u);
+  const [s, a] = g("disconnected"), [f, n] = g(null), d = x(null), c = x(0), p = x(null), l = x(!0), m = x(o);
   return k(() => {
-    m.current = u;
-  }, [u]), k(() => {
+    m.current = o;
+  }, [o]), k(() => {
     if (typeof window > "u" || !e || !t) return;
-    f.current = !0;
+    l.current = !0;
     function h() {
-      l.current && (clearTimeout(l.current), l.current = null);
+      p.current && (clearTimeout(p.current), p.current = null);
     }
-    function v(d) {
-      d.send(JSON.stringify({
+    function v(u) {
+      u.send(JSON.stringify({
         type: "subscribe",
         channel: "prices",
         eventId: e
       }));
     }
-    function M(d) {
+    function T(u) {
       var F;
-      const E = d.data.split(`
+      const E = u.data.split(`
 `);
       for (const L of E) {
         if (!L.trim()) continue;
@@ -102,62 +102,66 @@ function N({
           return;
         }
         if (y.type === "price_update") {
-          const R = y.data.markets.find((U) => U.id === t);
+          const R = y.data.markets.find((j) => j.id === t);
           if (!R) return;
           const S = R.prices, P = Object.keys(S);
           if (P.length < 2) return;
-          const [A, z] = P, T = {
+          const [A, $] = P, U = {
             outcome1Label: A,
             outcome1Price: S[A],
-            outcome2Label: z,
-            outcome2Price: S[z]
+            outcome2Label: $,
+            outcome2Price: S[$]
           };
-          m.current(T);
+          m.current(U);
         }
       }
     }
     function D() {
-      if (!f.current) return;
-      p("connecting"), n(null);
-      const d = new WebSocket(q);
-      o.current = d, d.addEventListener("open", () => {
-        if (!f.current) {
-          d.close();
+      if (!l.current) return;
+      a("connecting"), n(null);
+      const u = new WebSocket(q);
+      d.current = u, u.addEventListener("open", () => {
+        if (!l.current) {
+          u.close();
           return;
         }
-        a.current = 0, p("connected"), v(d);
-      }), d.addEventListener("message", M), d.addEventListener("close", () => {
-        if (!f.current) return;
-        p("disconnected");
-        const E = Math.min(1e3 * 2 ** a.current, H);
-        a.current++, l.current = setTimeout(D, E);
-      }), d.addEventListener("error", () => {
-        p("error"), d.close();
+        c.current = 0, a("connected"), v(u);
+      }), u.addEventListener("message", T), u.addEventListener("close", () => {
+        if (!l.current) return;
+        a("disconnected");
+        const E = Math.min(1e3 * 2 ** c.current, H);
+        c.current++, p.current = setTimeout(D, E);
+      }), u.addEventListener("error", () => {
+        a("error"), u.close();
       });
     }
     return D(), () => {
-      f.current = !1, h(), o.current && (o.current.close(), o.current = null);
+      l.current = !1, h(), d.current && (d.current.close(), d.current = null);
     };
-  }, [e, t]), { status: c, serverError: s };
+  }, [e, t]), { status: s, serverError: f };
 }
-const J = "https://bayse.markets/events";
-function w(e) {
-  return `${Math.round(e * 100)}¢`;
+const K = "https://bayse.markets/events";
+function B(e) {
+  return e === "NGN" ? "₦" : "$";
 }
-function K(e) {
+function w(e, t) {
+  return `${B(t)}${Math.round(e * 100)}`;
+}
+function V(e) {
   return `${Math.round(e * 100)}%`;
 }
-function B(e) {
-  return e >= 1e6 ? `$${(e / 1e6).toFixed(1)}M` : e >= 1e3 ? `$${(e / 1e3).toFixed(1)}K` : `$${e.toFixed(0)}`;
+function C(e, t) {
+  const o = B(t);
+  return e >= 1e6 ? `${o}${(e / 1e6).toFixed(1)}M` : e >= 1e3 ? `${o}${(e / 1e3).toFixed(1)}K` : `${o}${e.toFixed(0)}`;
 }
-function C(e) {
+function W(e) {
   return new Date(e).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric"
   });
 }
-function V({ status: e }) {
+function G({ status: e }) {
   const t = e === "connected";
   return /* @__PURE__ */ i("span", { style: {
     display: "inline-flex",
@@ -181,7 +185,7 @@ function V({ status: e }) {
     t ? "Live" : "Connecting"
   ] });
 }
-function W({ outcome1Price: e }) {
+function M({ outcome1Price: e }) {
   const t = Math.round(e * 100);
   return /* @__PURE__ */ i("div", { style: {
     height: "6px",
@@ -220,7 +224,7 @@ function X() {
     opacity: 0.6
   } }, t)) }) });
 }
-function G({ message: e }) {
+function Q({ message: e }) {
   return /* @__PURE__ */ r("div", { style: { ...b, padding: "16px" }, children: /* @__PURE__ */ r("p", { style: { margin: 0, fontSize: "13px", color: "#A32D2D" }, children: e }) });
 }
 const b = {
@@ -232,15 +236,16 @@ const b = {
   maxWidth: "420px",
   width: "100%"
 };
-function Q({
+function Y({
   state: e,
   prices: t,
-  streamStatus: u,
-  onTrade: c,
-  slug: p
+  streamStatus: o,
+  onTrade: s,
+  slug: a,
+  currency: f
 }) {
-  const { event: s, market: n } = e;
-  return !s || !n ? null : /* @__PURE__ */ i("div", { style: b, children: [
+  const { event: n, market: d } = e;
+  return !n || !d ? null : /* @__PURE__ */ i("div", { style: b, children: [
     /* @__PURE__ */ r("style", { children: `
         @keyframes bayse-pulse {
           0%, 100% { opacity: 1; }
@@ -251,13 +256,13 @@ function Q({
       padding: "14px 16px 12px",
       borderBottom: "0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.15))"
     }, children: [
-      /* @__PURE__ */ r("div", { style: { marginBottom: "8px" }, children: /* @__PURE__ */ r(V, { status: u }) }),
-      /* @__PURE__ */ r("p", { style: { margin: "0 0 4px", fontSize: "14px", fontWeight: 500, lineHeight: 1.45 }, children: s.title }),
+      /* @__PURE__ */ r("div", { style: { marginBottom: "8px" }, children: /* @__PURE__ */ r(G, { status: o }) }),
+      /* @__PURE__ */ r("p", { style: { margin: "0 0 4px", fontSize: "14px", fontWeight: 500, lineHeight: 1.45 }, children: n.title }),
       /* @__PURE__ */ i("p", { style: { margin: 0, fontSize: "12px", color: "var(--color-text-secondary, #5F5E5A)" }, children: [
         "Resolves ",
-        C(s.resolutionDate),
+        W(n.resolutionDate),
         " · ",
-        s.category
+        n.category
       ] })
     ] }),
     /* @__PURE__ */ r("div", { style: {
@@ -269,15 +274,15 @@ function Q({
     }, children: [
       { label: t.outcome1Label, price: t.outcome1Price, color: "#0F6E56" },
       { label: t.outcome2Label, price: t.outcome2Price, color: "#A32D2D" }
-    ].map(({ label: o, price: a, color: l }) => /* @__PURE__ */ i("div", { style: {
+    ].map(({ label: c, price: p, color: l }) => /* @__PURE__ */ i("div", { style: {
       background: "var(--color-background-secondary, #F1EFE8)",
       borderRadius: "8px",
       padding: "10px 12px"
     }, children: [
-      /* @__PURE__ */ r("p", { style: { margin: "0 0 4px", fontSize: "11px", fontWeight: 500, color: "var(--color-text-secondary, #5F5E5A)", letterSpacing: "0.02em" }, children: o }),
-      /* @__PURE__ */ r("p", { style: { margin: "0 0 3px", fontSize: "22px", fontWeight: 500, color: l, lineHeight: 1 }, children: w(a) }),
+      /* @__PURE__ */ r("p", { style: { margin: "0 0 4px", fontSize: "11px", fontWeight: 500, color: "var(--color-text-secondary, #5F5E5A)", letterSpacing: "0.02em" }, children: c }),
+      /* @__PURE__ */ r("p", { style: { margin: "0 0 3px", fontSize: "22px", fontWeight: 500, color: l, lineHeight: 1 }, children: w(p, f) }),
       /* @__PURE__ */ r("p", { style: { margin: 0, fontSize: "11px", color: "var(--color-text-secondary, #5F5E5A)" }, children: "per share" })
-    ] }, o)) }),
+    ] }, c)) }),
     /* @__PURE__ */ i("div", { style: {
       padding: "12px 16px",
       borderBottom: "0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.15))"
@@ -285,12 +290,12 @@ function Q({
       /* @__PURE__ */ i("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: "7px" }, children: [
         /* @__PURE__ */ r("span", { style: { fontSize: "12px", color: "var(--color-text-secondary, #5F5E5A)" }, children: "Implied probability" }),
         /* @__PURE__ */ i("span", { style: { fontSize: "13px", fontWeight: 500 }, children: [
-          K(t.outcome1Price),
+          V(t.outcome1Price),
           " ",
           t.outcome1Label
         ] })
       ] }),
-      /* @__PURE__ */ r(W, { outcome1Price: t.outcome1Price })
+      /* @__PURE__ */ r(M, { outcome1Price: t.outcome1Price })
     ] }),
     /* @__PURE__ */ r("div", { style: {
       display: "grid",
@@ -298,16 +303,16 @@ function Q({
       padding: "10px 16px",
       borderBottom: "0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.15))"
     }, children: [
-      { label: "24h volume", value: B(s.totalVolume) },
-      { label: "Liquidity", value: B(s.liquidity) }
-    ].map(({ label: o, value: a }, l) => /* @__PURE__ */ i("div", { style: {
+      { label: "24h volume", value: C(n.totalVolume, f) },
+      { label: "Liquidity", value: C(n.liquidity, f) }
+    ].map(({ label: c, value: p }, l) => /* @__PURE__ */ i("div", { style: {
       paddingRight: l === 0 ? "16px" : 0,
       paddingLeft: l === 1 ? "16px" : 0,
       borderRight: l === 0 ? "0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.15))" : "none"
     }, children: [
-      /* @__PURE__ */ r("p", { style: { margin: "0 0 2px", fontSize: "11px", color: "var(--color-text-secondary, #5F5E5A)" }, children: o }),
-      /* @__PURE__ */ r("p", { style: { margin: 0, fontSize: "13px", fontWeight: 500 }, children: a })
-    ] }, o)) }),
+      /* @__PURE__ */ r("p", { style: { margin: "0 0 2px", fontSize: "11px", color: "var(--color-text-secondary, #5F5E5A)" }, children: c }),
+      /* @__PURE__ */ r("p", { style: { margin: 0, fontSize: "13px", fontWeight: 500 }, children: p })
+    ] }, c)) }),
     /* @__PURE__ */ i("div", { style: {
       padding: "10px 16px",
       display: "flex",
@@ -318,7 +323,7 @@ function Q({
       /* @__PURE__ */ r(
         "button",
         {
-          onClick: c,
+          onClick: s,
           style: {
             fontSize: "12px",
             fontWeight: 500,
@@ -335,37 +340,38 @@ function Q({
     ] })
   ] });
 }
-function Y({
+function Z({
   state: e,
   prices: t,
-  onTrade: u
+  onTrade: o,
+  currency: s
 }) {
-  const { event: c } = e;
-  return c ? /* @__PURE__ */ i("div", { style: { ...b, padding: "12px 14px", display: "flex", flexDirection: "column", gap: "8px" }, children: [
-    /* @__PURE__ */ r("p", { style: { margin: 0, fontSize: "12px", fontWeight: 500, lineHeight: 1.4 }, children: c.title }),
+  const { event: a } = e;
+  return a ? /* @__PURE__ */ i("div", { style: { ...b, padding: "12px 14px", display: "flex", flexDirection: "column", gap: "8px" }, children: [
+    /* @__PURE__ */ r("p", { style: { margin: 0, fontSize: "12px", fontWeight: 500, lineHeight: 1.4 }, children: a.title }),
     /* @__PURE__ */ i("div", { style: { display: "flex", gap: "8px", alignItems: "center" }, children: [
       /* @__PURE__ */ i("span", { style: { fontSize: "13px", fontWeight: 500, color: "#0F6E56" }, children: [
         t.outcome1Label,
         " ",
-        w(t.outcome1Price)
+        w(t.outcome1Price, s)
       ] }),
       /* @__PURE__ */ r("span", { style: { fontSize: "11px", color: "var(--color-text-secondary, #5F5E5A)" }, children: "·" }),
       /* @__PURE__ */ i("span", { style: { fontSize: "13px", fontWeight: 500, color: "#A32D2D" }, children: [
         t.outcome2Label,
         " ",
-        w(t.outcome2Price)
+        w(t.outcome2Price, s)
       ] })
     ] }),
-    /* @__PURE__ */ r(W, { outcome1Price: t.outcome1Price }),
+    /* @__PURE__ */ r(M, { outcome1Price: t.outcome1Price }),
     /* @__PURE__ */ i("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" }, children: [
       /* @__PURE__ */ i("span", { style: { fontSize: "10px", color: "var(--color-text-secondary, #5F5E5A)" }, children: [
         "Resolves ",
-        C(c.resolutionDate)
+        W(a.resolutionDate)
       ] }),
       /* @__PURE__ */ r(
         "button",
         {
-          onClick: u,
+          onClick: o,
           style: {
             fontSize: "10px",
             fontWeight: 500,
@@ -382,31 +388,32 @@ function Y({
     ] })
   ] }) : null;
 }
-function re({ slug: e, variant: t = "full", currency: u = "USD", onTrade: c }) {
+function ne({ slug: e, variant: t = "full", currency: o = "USD", onTrade: s }) {
   var m, h;
-  const [p, s] = g(null), n = O(e, u), o = $((v) => {
-    s(v);
-  }, []), { status: a } = N({
+  const [a, f] = g(null), n = O(e, o), d = z((v) => {
+    f(v);
+  }, []), { status: c } = J({
     eventId: ((m = n.event) == null ? void 0 : m.id) ?? null,
     marketId: ((h = n.market) == null ? void 0 : h.id) ?? null,
-    onPriceUpdate: o
-  }), l = $(() => {
-    c ? c(e) : window.open(`${J}/${e}`, "_blank", "noopener,noreferrer");
-  }, [e, c]);
+    onPriceUpdate: d
+  }), p = z(() => {
+    s ? s(e) : window.open(`${K}/${e}`, "_blank", "noopener,noreferrer");
+  }, [e, s]);
   if (n.loading) return /* @__PURE__ */ r(X, {});
-  if (n.error) return /* @__PURE__ */ r(G, { message: n.error });
-  const f = p ?? n.prices;
-  return f ? t === "compact" ? /* @__PURE__ */ r(Y, { state: n, prices: f, onTrade: l }) : /* @__PURE__ */ r(
-    Q,
+  if (n.error) return /* @__PURE__ */ r(Q, { message: n.error });
+  const l = a ?? n.prices;
+  return l ? t === "compact" ? /* @__PURE__ */ r(Z, { state: n, prices: l, onTrade: p, currency: o }) : /* @__PURE__ */ r(
+    Y,
     {
       state: n,
-      prices: f,
-      streamStatus: a,
-      onTrade: l,
-      slug: e
+      prices: l,
+      streamStatus: c,
+      onTrade: p,
+      slug: e,
+      currency: o
     }
   ) : null;
 }
 export {
-  re as BayseMarket
+  ne as BayseMarket
 };
