@@ -1,4 +1,4 @@
-# bayse-embed
+# bayse-markets-embed
 
 A lightweight, framework-agnostic library for embedding real-time prediction market widgets from [Bayse Markets](https://bayse.markets).  Includes a standalone <bayse-market> HTML custom element and a native React <BayseMarket /> component.
 
@@ -20,10 +20,10 @@ A lightweight, framework-agnostic library for embedding real-time prediction mar
 
 ### React
 ```bash
-npm install bayse-embed
+npm install bayse-markets-embed
 ```
 ```tsx
-import { BayseMarket } from 'bayse-embed'
+import { BayseMarket } from 'bayse-markets-embed'
 
 <BayseMarket slug="your-market-slug" />
 ```
