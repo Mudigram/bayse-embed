@@ -1,12 +1,12 @@
 {
-    "rewrites": [
+    "routes": [
         {
-            "source": "/api/:path*",
-            "destination": "https://relay.bayse.markets/:path*"
+            "src": "/embed.js",
+            "dest": "/dist/cdn/embed.js"
         },
         {
-            "source": "/embed.js",
-            "destination": "/dist/cdn/embed.js"
+            "src": "/api/(.*)",
+            "dest": "https://relay.bayse.markets/$1"
         }
     ]
 }

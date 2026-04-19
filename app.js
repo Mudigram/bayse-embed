@@ -50,7 +50,7 @@ function closingLabel(iso) {
 function formatVolume(value, currency) {
     const symbol = getCurrencySymbol(currency)
     if (value >= 1_000_000) return `${symbol}${(value / 1_000_000).toFixed(1)}M`
-    if (value >= 1_000)     return `${symbol}${(value / 1_000).toFixed(1)}K`
+    if (value >= 1_000) return `${symbol}${(value / 1_000).toFixed(1)}K`
     return `${symbol}${value.toFixed(0)}`
 }
 
@@ -143,9 +143,9 @@ function renderGrid() {
         const market = event.markets?.[0]
         if (!market) return ''
 
-        const yes     = market.outcome1Price ?? 0
-        const no      = market.outcome2Price ?? 0
-        const yesPct  = Math.round(yes * 100)
+        const yes = market.outcome1Price ?? 0
+        const no = market.outcome2Price ?? 0
+        const yesPct = Math.round(yes * 100)
         const isSelected = state.selected?.slug === event.slug
 
         return `
@@ -247,7 +247,7 @@ function renderPanel() {
 ></bayse-market>`
 
     const reactSnippet =
-        `import { BayseMarket } from 'bayse-embed'
+        `import { BayseMarket } from 'bayse-markets-embed'
 
 <BayseMarket
   slug="${slug}"
