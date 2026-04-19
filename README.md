@@ -1,6 +1,14 @@
 # bayse-embed
 
-Embeddable prediction market widgets for [Bayse Markets](https://bayse.markets).
+A lightweight, framework-agnostic library for embedding real-time prediction market widgets from [Bayse Markets](https://bayse.markets).  Includes a standalone <bayse-market> HTML custom element and a native React <BayseMarket /> component.
+
+## Features
+
+- **Zero-config**: Drop the script and add a tag. No build step required.
+- **Framework-agnostic**: Works with React, Vue, Svelte, or vanilla HTML.
+- **Real-time updates**: Live prices and order book data via WebSocket.
+- **Customizable**: Two card sizes (full and compact) and currency selection.
+- **Lightweight**: Under 5KB (gzipped) and no heavy dependencies.
 
 ## Quick start
 
