@@ -317,6 +317,34 @@ button {
     box-shadow: var(--shadow-md);
 }
 
+.btn-github {
+    background: #24292e;
+    color: #ffffff;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: background 0.15s, transform 0.15s;
+}
+
+.btn-github:hover {
+    background: #1b1f23;
+    transform: translateY(-1px);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .btn-github {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 0.5px solid var(--border-md);
+}
+
+[data-theme="dark"] .btn-github:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
 /* ─── Container ─────────────────────────────────────────────── */
 .container {
     max-width: 1100px;
